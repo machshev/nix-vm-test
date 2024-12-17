@@ -47,7 +47,7 @@ rec {
 
     # TODO: do we actually need to source /etc/profile ?
     # Unbound vars cause the service to crash
-    #source /etc/profile
+    # source /etc/profile
 
     # Don't use a pager when executing backdoor
     # actions. Because we use a tty, commands like systemctl
@@ -192,7 +192,7 @@ rec {
             "-drive file=${image},format=qcow2"
             "-device virtio-net-pci,netdev=net0"
             "-netdev user,id=net0"
-            "-virtfs local,security_model=passthrough,id=fsdev1,path=/nix/store,readonly=on,mount_tag=nix-store"
+            (lib.optionalString node.virtualisation.useHostNixStore "-virtfs local,security_model=passthrough,id=fsdev1,path=/nix/store,readonly=on,mount_tag=nix-store")
             (lib.concatStringsSep "\\\n  "
               (lib.mapAttrsToList
               (tag: share: "-virtfs local,path=\"\${abs_mnt_paths[\"${tag}\"]}\",security_model=none,mount_tag=${tag}")

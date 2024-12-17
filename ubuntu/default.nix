@@ -6,15 +6,15 @@ let
     url = image.name;
   };
   images = lib.mapAttrs (k: v: fetchImage v) imagesJSON.${system};
-  makeVmTestForImage = image: { testScript, sharedDirs, diskSize ? null, extraPathsToRegister ? [ ] }: generic.makeVmTest {
+  makeVmTestForImage = image: { testScript, sharedDirs, useHostNixStore ? true, diskSize ? null, extraPathsToRegister ? [ ] }: generic.makeVmTest {
     inherit system testScript sharedDirs;
     image = prepareUbuntuImage {
-      inherit diskSize extraPathsToRegister;
+      inherit diskSize extraPathsToRegister useHostNixStore;
       hostPkgs = pkgs;
       originalImage = image;
     };
   };
-  prepareUbuntuImage = { hostPkgs, originalImage, diskSize, extraPathsToRegister }:
+  prepareUbuntuImage = { hostPkgs, originalImage, diskSize, extraPathsToRegister, useHostNixStore }:
     let
       pkgs = hostPkgs;
       resultImg = "./image.qcow2";

@@ -47,6 +47,12 @@ let
             });
           default = { };
         };
+
+        useHostNixStore = lib.mkOption {
+          type = types.bool;
+          default = true;
+          description = "Mount the host machine's nix store in the VM.";
+        };
       };
     };
 
