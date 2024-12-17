@@ -44,7 +44,7 @@ let
         "--no-network"
         "--copy-in backdoor.service:/etc/systemd/system"
         "--copy-in backdoor-start-script:/usr/bin"
-        "--copy-in mount-store.service:/etc/systemd/system"
+        (lib.optionalString useHostNixStore "--copy-in mount-store.service:/etc/systemd/system")
         "--copy-in resizeguest.service:/etc/systemd/system"
         "--run"
         (pkgs.writeShellScript "run-script" ''
