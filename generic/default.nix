@@ -34,7 +34,10 @@ rec {
       WantedBy = multi-user.target
     '';
 
-  backdoorScript = pkgs.writeShellScript "backdoor-start-script" ''
+  # Use writeText as writeShellScript adds a shebang to the host's bash
+  backdoorScript = pkgs.writeText "backdoor-start-script" ''
+    #!/usr/bin/env bash
+
     set -euo pipefail
 
     ProtectSystem=false
@@ -71,13 +74,13 @@ rec {
   backdoor =
     pkgs.writeText "backdoor.service" ''
       [Unit]
-      Requires = dev-hvc0.device dev-ttyS0.device mount-store.service
-      After = dev-hvc0.device dev-ttyS0.device mount-store.service
+      Requires = dev-hvc0.device dev-ttyS0.device
+      After = dev-hvc0.device dev-ttyS0.device
       # Keep this unit active when we switch to rescue mode for instance
       IgnoreOnIsolate = true
 
       [Service]
-      ExecStart = ${backdoorScript}
+      ExecStart = /usr/bin/backdoor-start-script
       KillSignal = SIGHUP
 
       [Install]

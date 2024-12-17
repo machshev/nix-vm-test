@@ -26,6 +26,7 @@ let
       # Copy the service files here, since otherwise they end up in the VM
       # with their paths including the nix hash
       cp ${generic.backdoor} backdoor.service
+      cp ${generic.backdoorScript} backdoor-start-script
       cp ${generic.mountStore { pathsToRegister = extraPathsToRegister; }} mount-store.service
       cp ${generic.resizeService} resizeguest.service
 
@@ -42,12 +43,16 @@ let
         "--memsize 256"
         "--no-network"
         "--copy-in backdoor.service:/etc/systemd/system"
+        "--copy-in backdoor-start-script:/usr/bin"
         "--copy-in mount-store.service:/etc/systemd/system"
         "--copy-in resizeguest.service:/etc/systemd/system"
         "--run"
         (pkgs.writeShellScript "run-script" ''
           # Clear the root password
           passwd -d root
+
+          # Make scripts executable
+          chmod +x /usr/bin/backdoor-start-script
 
           # Don't spawn ttys on these devices, they are used for test instrumentation
           systemctl mask serial-getty@ttyS0.service
